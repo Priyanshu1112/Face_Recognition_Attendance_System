@@ -115,6 +115,10 @@ class Attendance_view:
         self.lbl_status['text'] = 'Status: Opening camera ...'
         self.root_splash.update()
         try:
+            known_eno = self.rf_obj.get_known_eno()
+            db_image_eno = self.dbc_obj.get_image_eno()
+            if len(known_eno) is not len(db_image_eno):
+                messagebox.showerror('Datasets Missing', 'Go to More Options > Restore Images for restoring from database')
             self.rf_obj.open_camera()
         except:
             print(traceback.format_exc())

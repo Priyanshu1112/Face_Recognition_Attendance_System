@@ -31,4 +31,5 @@ class Dir_controller:
 
     def delete_image(self, img_name):
         os.remove(self.default_path+'/'.img_name.upper()+'.jpg')
+        print(self.default_path+'/'.img_name.upper()+'.jpg')
         return 'Removed'

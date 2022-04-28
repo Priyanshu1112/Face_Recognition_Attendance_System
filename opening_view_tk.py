@@ -2,7 +2,6 @@ import time
 import tkinter as tk
 import traceback
 from threading import Thread
-
 import more_options_view
 import splash_attendance
 import splash_register

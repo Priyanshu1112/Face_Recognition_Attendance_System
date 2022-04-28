@@ -244,3 +244,21 @@ class Db_model:
         self.cur.execute(f"update infos set end_time = to_date('{end_time}', 'HH24:MI:SS')")
         self.conn.commit()
         return 'Success'
+
+    def get_image_eno(self):
+        self.cur.execute('select e_no from student_images')
+        eno = []
+        for x in self.cur:
+            eno.append(x[0])
+        return eno
+
+    def restore_images(self, eno):
+        #print('db model restore image called')
+        eno = list(eno)
+        for x in eno:
+            self.cur.execute(f"select image from student_images where e_no = '{x}'")
+            image = self.cur.fetchone()
+            with open(self.get_path()+'/'+x+'.jpg', 'wb') as file:
+                #print(self.get_path()+'/'+x+'.jpg')
+                file.write(image[0].read())
+        return True

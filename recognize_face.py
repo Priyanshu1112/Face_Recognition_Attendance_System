@@ -86,6 +86,9 @@ class Recognize_face:
         for f in known_images:
             self.known_images_encodings.append(face_recognition.face_encodings(f)[0])
 
+    def get_known_eno(self):
+        return self.known_eno
+
     def open_camera(self):
         run_time = 0
         while self.run_loop:

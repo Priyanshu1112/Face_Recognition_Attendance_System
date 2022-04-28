@@ -72,3 +72,9 @@ class Db_controller:
 
     def update_time(self, start_time, end_time):
         return self.dbm_obj.update_time(start_time, end_time)
+
+    def get_image_eno(self):
+        return self.dbm_obj.get_image_eno()
+
+    def restore_images(self, eno):
+        return self.dbm_obj.restore_images(eno)

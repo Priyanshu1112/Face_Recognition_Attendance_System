@@ -18,7 +18,7 @@ class File_Model:
                 result+=ch
         return result
 
-    def decrpt(self, ciphertext):
+    def decrypt(self, ciphertext):
         result=''
         for ch in ciphertext:
             try:
@@ -42,15 +42,22 @@ class File_Model:
         self.url.close()
         self.url=filepath
 
+    def save_changes(self, msg, path):
+        filename, file_extension = os.path.splitext(path)
+        if file_extension in '.ntxt':
+            msg = self.encrypt(msg)
+        with open(path, 'w') as fw:
+            fw.write(msg)
+
     def save_file(self, msg):
         if self.url=='':
             self.url=asksaveasfilename(title='Select File', defaultextension='.ntxt', filetypes=[('Text Documents', '*.*')])
-            filename, file_extension=os.path.splitext(self.url)
-            content=msg
-            if file_extension in '.ntxt':
-                content=self.encrypt(content)
-            with open(self.url, 'w', encoding='utf-8') as fw:
-                fw.write(content)
+        filename, file_extension=os.path.splitext(self.url)
+        content=msg
+        if file_extension in '.ntxt':
+            content=self.encrypt(content)
+        with open(self.url, 'w', encoding='utf-8') as fw:
+            fw.write(content)
 
     def read_file(self, url=''):
         if url != '':

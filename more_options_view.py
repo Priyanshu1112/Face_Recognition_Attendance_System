@@ -1,5 +1,6 @@
 import datetime
 import tkinter as tk
+from idlelib.tooltip import Hovertip
 import traceback
 import tkcalendar
 import db_controller
@@ -8,7 +9,8 @@ from tkinter import messagebox, ttk
 from threading import Thread
 import time
 import dir_controller
-
+import NotePadView
+import os
 
 class More_options_view:
     def __init__(self, root):
@@ -98,6 +100,25 @@ class More_options_view:
         self.forget_widgets_dec()
         self.entry_eno2_placed = False
         self.load_eno()
+
+    #comparing datasets
+        if self.compare_datasets() is False:
+            self.btn_restore_images['background'] = '#FF9494'
+            Hovertip(self.btn_restore_images, 'Datasets missing')
+            messagebox.showerror('Datasets Missing',
+                                 f'Images of {self.compared_eno} is/are missing.')
+
+    def compare_datasets(self):
+        self.known_eno = []
+        self.default_path = self.dbc_obj.get_path()
+        image_paths = [os.path.join(self.default_path, f) for f in os.listdir(self.default_path)]
+        for f in image_paths:
+            self.known_eno.append(os.path.splitext(os.path.basename(f))[0])
+        self.db_image_eno = self.dbc_obj.get_image_eno()
+        self.compared_eno = set(self.db_image_eno) - set(self.known_eno)
+        if self.compared_eno == set():
+            return True
+        return False
 
     def update_student(self):
         if self.btn_update['text'] == 'Update':
@@ -296,6 +317,7 @@ class More_options_view:
                 messagebox.showerror('Unsuccessful', 'Day already marked with this name')
             else:
                 messagebox.showerror('Unsuccessful', 'Cannot mark holiday')
+
         def select_date():
             def done():
                 date = convert_date(cal.get_date())
@@ -315,7 +337,8 @@ class More_options_view:
             btn_done.pack()
             root1.mainloop()
         def cancel():
-            pass
+            root.destroy()
+
         def convert_date(c_date):
             date = datetime.date.today() 
             if c_date != 'today':
@@ -453,10 +476,27 @@ class More_options_view:
                 messagebox.showinfo('NO Change', 'No change in time detected')
 
     def open_notepad(self):
-        pass
+        print('open notepad called')
+        try:
+           self.notepad_view = NotePadView.Notepad()
+           self.notepad_view.run()
+        except:
+            print(traceback.format_exc())
+            messagebox.showerror('ERROR', 'Unable to open notepad')
 
     def restore_images(self):
-        pass
+        print('restore images called')
+        if self.compare_datasets() is False:
+            try:
+                if self.dbc_obj.restore_images(self.compared_eno):
+                    messagebox.showinfo('Done', 'Images restored successfully.')
+                    self.btn_restore_images['background'] = '#d3ebd7'
+                    Hovertip(self.btn_restore_images, '')
+            except:
+                print(traceback.format_exc())
+                messagebox.showerror('ERROR', 'Could not restore images')
+        else:
+            messagebox.showinfo('Already Present', 'All images are already present.')
 
     def validate_for_change_eno(self, alt_eno):
         if alt_eno == '' or self.cb_eno.get() == '':
@@ -480,6 +520,7 @@ class More_options_view:
                 self.e_no = []
                 for f in self.dbc_obj.get_all_eno():
                     self.e_no.append(f)
+                print('from load from db', self.e_no)
             else:
                 tk.messagebox.showerror('ERROR', 'No Student present in DB')
         else:
