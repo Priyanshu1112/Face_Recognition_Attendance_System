@@ -81,7 +81,7 @@ class cur_time(Thread):
             self.lbl_time.configure(text='Time:-'+time.strftime('%H:%M:%S'))
             time.sleep(1)
 
-    def stop(self):
+    def stop(self): #hello
         self.run_thread = False
 
 if __name__ == '__main__':
